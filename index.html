@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Molino mapper</title>
+  <title>Molino Mapper</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,14 +19,19 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    .button-two {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4c54af;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
     button:hover {
       background-color: #45a049;
     }
-    #coordinates {
-      margin-top: 20px;
-      font-size: 18px;
-    }
-    #result {
+    #coordinates, #calibration, #result {
       margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
@@ -34,8 +39,10 @@
   </style>
 </head>
 <body>
-  <h1>Molino mapper</h1>
+  <h1>Molino Mapper</h1>
+  <button class="button-two" onclick="setCalibrationPoint()">Standing at Corner of House</button>
   <button onclick="captureCoordinates()">Check My Location</button>
+  <div id="calibration"></div>
   <div id="coordinates"></div>
   <div id="result"></div>
 
@@ -105,6 +112,8 @@
       [37.2099647, -3.5585383]
     ];
 
+    let calibrationPoint = null;
+
     // Ray-casting algorithm
     function isPointInPolygon(point, polygon) {
       let x = point[0], y = point[1];
@@ -122,6 +131,12 @@
       return inside;
     }
 
+    // Set calibration point
+    function setCalibrationPoint() {
+      calibrationPoint = { lat: 37.2100998, lon: -3.5586674 };
+      document.getElementById("calibration").innerText = `Calibration Point Set: ${calibrationPoint.lat}, ${calibrationPoint.lon}`;
+    }
+
     // Capture coordinates
     function captureCoordinates() {
       // Clear previous results
@@ -130,12 +145,21 @@
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
+          let latitude = position.coords.latitude;
+          let longitude = position.coords.longitude;
+
+          if (calibrationPoint) {
+            // Adjust coordinates based on calibration point
+            const deltaLat = calibrationPoint.lat - latitude;
+            const deltaLon = calibrationPoint.lon - longitude;
+            latitude += deltaLat;
+            longitude += deltaLon;
+          }
+
           const point = [latitude, longitude];
 
           // Display captured coordinates
-          document.getElementById("coordinates").innerText = `Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+          document.getElementById("coordinates").innerText = `Adjusted Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
 
           // Check if inside polygon
           const isInside = isPointInPolygon(point, polygon);
