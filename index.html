@@ -22,7 +22,7 @@
     button:hover {
       background-color: #45a049;
     }
-    #result {
+    #coordinates, #result {
       margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
@@ -32,6 +32,7 @@
 <body>
   <h1>Point in Polygon Checker</h1>
   <button onclick="captureCoordinates()">Check My Location</button>
+  <div id="coordinates"></div>
   <div id="result"></div>
 
   <script>
@@ -125,10 +126,14 @@
           const longitude = position.coords.longitude;
           const point = [latitude, longitude];
 
+          // Display captured coordinates
+          document.getElementById("coordinates").innerText = `Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+          // Check if inside polygon
           const isInside = isPointInPolygon(point, polygon);
           const resultText = isInside
-            ? "You are inside the polygon!"
-            : "You are outside the polygon!";
+            ? "Congratulations, this is your land!"
+            : "Damn, this is not your land...";
           document.getElementById("result").innerText = resultText;
         }, (error) => {
           document.getElementById("result").innerText = "Error: Unable to retrieve location.";
