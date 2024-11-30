@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Point in Polygon Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Point in Polygon Checker</h1>
+  <button onclick="captureCoordinates()">Check My Location</button>
+  <div id="result"></div>
+
+  <script>
+    // Polygon coordinates
+    const polygon = [
+      [37.2099647, -3.5585383],
+      [37.2098904, -3.5586443],
+      [37.2098839, -3.558653],
+      [37.2098584, -3.5586865],
+      [37.2098944, -3.5587307],
+      [37.2098537, -3.5587564],
+      [37.2099367, -3.5588812],
+      [37.2099445, -3.5588826],
+      [37.2100766, -3.5588078],
+      [37.210194, -3.5585526],
+      [37.2103206, -3.5580824],
+      [37.2101404, -3.5584854],
+      [37.2101387, -3.5584492],
+      [37.2101352, -3.5584781],
+      [37.2101228, -3.5584486],
+      [37.2100777, -3.5583827],
+      [37.2100756, -3.5583798],
+      [37.2099946, -3.5584956],
+      [37.2099667, -3.5585354],
+      [37.2099647, -3.5585383],
+      [37.2099647, -3.5585383],
+      [37.2099778, -3.5585503],
+      [37.2099789, -3.5585484],
+      [37.2100007, -3.5585122],
+      [37.2099949, -3.5585069],
+      [37.21, -3.5585012],
+      [37.2099976, -3.5584987],
+      [37.2100133, -3.5584753],
+      [37.2100355, -3.5584429],
+      [37.2100838, -3.5584941],
+      [37.2100905, -3.5585011],
+      [37.210077, -3.5585268],
+      [37.2100742, -3.5585322],
+      [37.210072, -3.5585355],
+      [37.2100786, -3.5585413],
+      [37.2100935, -3.5585545],
+      [37.2101201, -3.5585783],
+      [37.2101364, -3.5585928],
+      [37.210127, -3.5586087],
+      [37.2100503, -3.558612],
+      [37.2100998, -3.5586674],
+      [37.2100951, -3.5586629],
+      [37.2100808, -3.55865],
+      [37.210027, -3.5586017],
+      [37.2100056, -3.5585823],
+      [37.2100022, -3.5585799],
+      [37.2099888, -3.5586031],
+      [37.2099882, -3.5586043],
+      [37.2099711, -3.5585887],
+      [37.2099351, -3.5586499],
+      [37.2099399, -3.5586547],
+      [37.2099573, -3.5586723],
+      [37.2099567, -3.5586735],
+      [37.2099415, -3.5586908],
+      [37.2099292, -3.5587049],
+      [37.2098912, -3.5586614],
+      [37.2098975, -3.5586507],
+      [37.209912, -3.5586264],
+      [37.2099349, -3.5585872],
+      [37.2099575, -3.558549],
+      [37.2099647, -3.5585383]
+    ];
+
+    // Ray-casting algorithm
+    function isPointInPolygon(point, polygon) {
+      let x = point[0], y = point[1];
+      let inside = false;
+
+      for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        let xi = polygon[i][0], yi = polygon[i][1];
+        let xj = polygon[j][0], yj = polygon[j][1];
+
+        let intersect = ((yi > y) !== (yj > y)) &&
+                        (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+
+      return inside;
+    }
+
+    // Capture coordinates
+    function captureCoordinates() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          const point = [latitude, longitude];
+
+          const isInside = isPointInPolygon(point, polygon);
+          const resultText = isInside
+            ? "You are inside the polygon!"
+            : "You are outside the polygon!";
+          document.getElementById("result").innerText = resultText;
+        }, (error) => {
+          document.getElementById("result").innerText = "Error: Unable to retrieve location.";
+        });
+      } else {
+        document.getElementById("result").innerText = "Geolocation is not supported by this browser.";
+      }
+    }
+  </script>
+</body>
+</html>
