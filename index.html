@@ -22,9 +22,9 @@
     button:hover {
       background-color: #45a049;
     }
-    #coordinates{
-        margin-top: 20px;
-        font-size: 18px;
+    #coordinates {
+      margin-top: 20px;
+      font-size: 18px;
     }
     #result {
       margin-top: 20px;
@@ -124,6 +124,10 @@
 
     // Capture coordinates
     function captureCoordinates() {
+      // Clear previous results
+      document.getElementById("coordinates").innerText = "";
+      document.getElementById("result").innerText = "";
+
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
           const latitude = position.coords.latitude;
