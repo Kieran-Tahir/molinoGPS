@@ -19,15 +19,6 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .button-two {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #4c54af;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
     button:hover {
       background-color: #45a049;
     }
@@ -40,8 +31,7 @@
 </head>
 <body>
   <h1>Molino Mapper</h1>
-  <button class="button-two" onclick="setCalibrationPoint()">Standing at Corner of House</button>
-  <button onclick="captureCoordinates()">Check My Location</button>
+  <button onclick="setCalibrationPoint()">Standing at Corner of House</button>
   <div id="calibration"></div>
   <div id="coordinates"></div>
   <div id="result"></div>
@@ -113,6 +103,7 @@
     ];
 
     let calibrationPoint = null;
+    let watchId = null;
 
     // Ray-casting algorithm
     function isPointInPolygon(point, polygon) {
@@ -137,14 +128,15 @@
       document.getElementById("calibration").innerText = `Calibration Point Set: ${calibrationPoint.lat}, ${calibrationPoint.lon}`;
     }
 
-    // Capture coordinates
+    // Watch and display live coordinates
     function captureCoordinates() {
       // Clear previous results
       document.getElementById("coordinates").innerText = "";
       document.getElementById("result").innerText = "";
 
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
+        // Start watching the position
+        watchId = navigator.geolocation.watchPosition((position) => {
           let latitude = position.coords.latitude;
           let longitude = position.coords.longitude;
 
@@ -158,8 +150,8 @@
 
           const point = [latitude, longitude];
 
-          // Display captured coordinates
-          document.getElementById("coordinates").innerText = `Adjusted Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+          // Display live coordinates
+          document.getElementById("coordinates").innerText = `Live Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
 
           // Check if inside polygon
           const isInside = isPointInPolygon(point, polygon);
